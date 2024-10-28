@@ -21,6 +21,7 @@ jobs:
         with:
           allowUpdates: true
           draft: false
+          skipInvalidTags: true
           makeLatest: true
           name: ${{ steps.semver.outputs.next }}
           body: Changelog Contents
