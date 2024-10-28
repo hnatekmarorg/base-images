@@ -1,0 +1,26 @@
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  runs-on: gha-runner-scale-set
+  build:
+    runs-on: gha-runner-scale-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/metadata-action@v3
+        id: metadata
+        with:
+          images: gitea.hnatekmar.xyz/${{ github.repository }}
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: int128/kaniko-action@v1
+        with:
+          push: true
+          tags: ${{ github.ref_name }}
+          cache: true
+          cache-repository: gitea.hnatekmar.xyz/${{ github.repository }}/cache
