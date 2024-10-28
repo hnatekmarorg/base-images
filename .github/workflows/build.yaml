@@ -2,7 +2,7 @@ on:
   push:
     tags:
       - '*'
-
+      
 jobs:
   runs-on: gha-runner-scale-set
   build:
