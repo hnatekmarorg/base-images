@@ -8,6 +8,10 @@ storage:
   directories:
     - path: /var/lib/matchbox/assets
       overwrite: true
+    - path: /var/netbootxyz/config
+      overwrite: true
+    - path: /var/netbootxyz/assets
+      overwrite: true
   files:
     - path: /etc/NetworkManager/system-connections/ens18.nmconnection
       mode: 0600
@@ -89,29 +93,30 @@ storage:
 
     - name: netbootxyz.service
       enabled: true
-      contents: |
-        [Unit]
-        Description=NetBootXYZ Container
-        After=docker.service
-        Requires=docker.service
+      contents:
+        inline: |
+          [Unit]
+          Description=NetBootXYZ Container
+          After=docker.service
+          Requires=docker.service
 
-        [Service]
-        Restart=on-failure
-        ExecStart=/usr/bin/podman run \
-          --name=netbootxyz \
-          -e MENU_VERSION=2.0.76 \
-          -e NGINX_PORT=9000 \
-          -e WEB_APP_PORT=3000 \
-          -p 3000:3000 \
-          -p 69:69/udp \
-          -p 9000:9000 \
-          -v /local/path/to/config:/config \
-          -v /local/path/to/assets:/assets \
-          --restart unless-stopped \
-          ghcr.io/netbootxyz/netbootxyz
+          [Service]
+          Restart=on-failure
+          ExecStart=/usr/bin/podman run \
+            --name=netbootxyz \
+            -e MENU_VERSION=2.0.76 \
+            -e NGINX_PORT=9000 \
+            -e WEB_APP_PORT=3000 \
+            -p 3000:3000 \
+            -p 69:69/udp \
+            -p 9000:9000 \
+            -v /var/netbootxyz/config:/config \
+            -v /var/netbootxyz/assets:/assets \
+            --restart unless-stopped \
+            ghcr.io/netbootxyz/netbootxyz
 
-        [Install]
-        WantedBy=multi-user.target
+          [Install]
+          WantedBy=multi-user.target
 
 systemd:
   units:
