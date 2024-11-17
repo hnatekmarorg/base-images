@@ -53,11 +53,12 @@ storage:
         inline: |
           [Unit]
           Description=Matchbox Service
-          After=clone-matchbox.service
+          After=docker.service
           Requires=docker.service
 
           [Service]
           Restart=always
+          ExecStartPre=/usr/local/bin/clone-matchbox.sh
           ExecStart=/usr/bin/podman run --net=host --rm -v /var/lib/matchbox:/var/lib/matchbox -v /etc/matchbox:/etc/matchbox:Z,ro quay.io/poseidon/matchbox:v0.10.0 -address=0.0.0.0:8080 -log-level=debug
 
           [Install]
@@ -78,32 +79,16 @@ storage:
       contents:
         inline: |
           [Unit]
-          Description=Run Matchbox Config Update Every Hour
+          Description=Run Matchbox config update every minute
 
           [Timer]
-          OnCalendar=*-*-* *:00:00
+          OnCalendar=*-*-* *:*:00
 
           [Install]
           WantedBy=timers.target
 
-    - path: /etc/systemd/system/clone-matchbox.service
-      contents:
-        inline: |
-          [Unit]
-          Description=Clone matchbox repository if it does not exist
-          Documentation=https://github.com/hnatekmarorg/matchbox
-          Wants=network-online.target
-          After=network-online.target
-
-          [Service]
-          Type=oneshot
-          ExecStart=/usr/local/bin/clone-matchbox.sh
-          RemainAfterExit=true
-
 systemd:
   units:
-    - name: clone-matchbox.service
-      enabled: true
     - name: matchbox.service
       enabled: true
     - name: matchbox-update.timer
