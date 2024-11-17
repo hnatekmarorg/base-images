@@ -3,24 +3,27 @@ on:
     tags:
       - '*'
       
+name: Release matchbox
+
 jobs:
-  runs-on: gha-runner-scale-set
-  build:
-    runs-on: gha-runner-scale-set
+  create-ignition:
+    runs-on: dind
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker/metadata-action@v3
-        id: metadata
+      - uses: actions/checkout@v2
+      - run: docker run -i --pull=always --rm quay.io/coreos/butane:release < ./coreos/matchbox.yml > matchbox.ign
+        name: Produce ignition from butane
+      - run: docker run -i --rm --pull=always -v ./outputs:/data quay.io/coreos/coreos-installer:release download -C /data -s stable -p metal -f iso
+        name: Download coreos ISO
+      - run: mkdir -p outputs && mkdir -p package
+      - run: docker run -i --rm --pull=always -w $(pwd) -v .:$(pwd) quay.io/coreos/coreos-installer:release iso customize -o $(pwd)/package/matchbox-${{github.ref_name}}.iso --dest-ignition $(pwd)/matchbox.ign $(pwd)/outputs/*.iso \
+          --dest-device /dev/sda
+        name: Customize ISO
+      - name: Upload ISO to s3
+        uses: lovellfelix/minio-deploy-action@v1
         with:
-          images: gitea.hnatekmar.xyz/${{ github.repository }}
-      - uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: int128/kaniko-action@v1
-        with:
-          push: true
-          tags: ${{ github.ref_name }}
-          cache: true
-          cache-repository: gitea.hnatekmar.xyz/${{ github.repository }}/cache
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
+          access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.AWS_S3_BUCKET }}
+          source_dir: 'package'
+          target_dir: '/'
