@@ -2,9 +2,7 @@ on:
   push:
     tags:
       - '*'
-      
 name: Release matchbox
-
 jobs:
   create-ignition:
     runs-on: dind

@@ -18,7 +18,6 @@ systemd:
             ExecStart=
             # Add new Execstart with `-` prefix to ignore failure`
             ExecStart=-/usr/sbin/agetty --autologin core --noclear %I $TERM
-
     - name: containerd.service
       enabled: true
       dropins:
@@ -53,7 +52,6 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
-
 storage:
   links:
     - path: /etc/localtime
@@ -62,5 +60,5 @@ storage:
     - path: /etc/proxy.env
       mode: 0644
       contents:
-        inline: |
+        inline: |-
           http_proxy="http://172.16.100.146:3128"
