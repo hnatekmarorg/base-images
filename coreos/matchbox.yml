@@ -8,8 +8,6 @@ storage:
   directories:
     - path: /var/lib/matchbox/assets
       overwrite: true
-    - path: /etc/matchbox
-      overwrite: true
   files:
     - path: /etc/NetworkManager/system-connections/ens18.nmconnection
       mode: 0600
