@@ -108,3 +108,5 @@ systemd:
       enabled: true
     - name: matchbox-update.timer
       enabled: true
+    - name: matchbox-update.service
+      enabled: true
