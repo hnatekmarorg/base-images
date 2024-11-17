@@ -87,8 +87,8 @@ storage:
 
           [Install]
           WantedBy=timers.target
-    - name: netbootxyz.service
-      enabled: true
+    - path: /etc/systemd/system/netbootxyz.service
+      mode: 0644
       contents:
         inline: |
           [Unit]
