@@ -7,8 +7,15 @@ passwd:
         - root
       ssh_authorized_keys:
         - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDFPly2MYEeh4FtFtftOa0qasGW4VNIzYv/ZzheQ/dFs martin@fedora
-storage:
+systemd:
   units:
+    - name: containerd.service
+      enabled: true
+      dropins:
+        - name: 99-proxy.conf
+          contents: |
+            [Service]
+            EnvironmentFile=/etc/proxy.env
     # Installing vim as a layered package with rpm-ostree
     - name: rpm-ostree-install-vim.service
       enabled: true
@@ -23,6 +30,7 @@ storage:
         ConditionPathExists=!/var/lib/%N.stamp
 
         [Service]
+        EnvironmentFile=/etc/proxy.env
         Type=oneshot
         RemainAfterExit=yes
         # `--allow-inactive` ensures that rpm-ostree does not return an error
@@ -36,6 +44,7 @@ storage:
         [Install]
         WantedBy=multi-user.target
 
+storage:
   links:
     - path: /etc/localtime
       target: ../usr/share/zoneinfo/Europe/Prague
@@ -44,11 +53,4 @@ storage:
       mode: 0644
       contents:
         inline: |
-          http_proxy=""
-
-    - name: rpm-ostreed.service
-      dropins:
-        - name: 99-proxy.conf
-          contents: |
-            [Service]
-            EnvironmentFile=/etc/proxy.env
+          http_proxy="http://172.16.100.146:3128"
