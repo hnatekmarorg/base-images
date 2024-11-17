@@ -55,7 +55,7 @@ storage:
         inline: |
           [Unit]
           Description=Matchbox Service
-          After=docker.service
+          After=clone-matchbox.service
           Requires=docker.service
 
           [Service]
@@ -104,6 +104,8 @@ storage:
 
 systemd:
   units:
+    - name: clone-matchbox.service
+      enabled: true
     - name: matchbox.service
       enabled: true
     - name: matchbox-update.timer
