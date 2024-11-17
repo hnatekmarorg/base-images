@@ -18,7 +18,7 @@ storage:
           [connection]
           id=ens18
           type=ethernet
-          interface-name=ens2
+          interface-name=ens18
           [ipv4]
           address1=172.16.100.60/24,172.16.100.1
           dns=8.8.8.8;
