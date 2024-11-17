@@ -11,6 +11,44 @@ storage:
     - path: /etc/matchbox
       overwrite: true
   files:
+    - path: /etc/NetworkManager/system-connections/ens18.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=ens18
+          type=ethernet
+          interface-name=ens2
+          [ipv4]
+          address1=172.16.100.60/24,172.16.100.1
+          dns=8.8.8.8;
+          dns-search=
+          may-fail=false
+          method=manual
+
+    - path: /etc/hostname
+      mode: 0644
+      contents:
+        inline: |
+          matchbox.hnatekmar.xyz
+    - path: /usr/local/bin/clone-matchbox.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+
+          # Define the repository URL and target directory
+          REPO_URL="https://github.com/hnatekmarorg/matchbox.git"
+          TARGET_DIR="/etc/matchbox"
+
+          # Check if the target directory exists
+          if [ ! -d "$TARGET_DIR" ]; then
+              # Clone the repository if the directory does not exist
+              git clone "$REPO_URL" "$TARGET_DIR"
+          else
+              echo "Directory $TARGET_DIR already exists. No action taken."
+          fi
+
     - path: /etc/systemd/system/matchbox.service
       mode: 0644
       contents:
@@ -49,6 +87,21 @@ storage:
 
           [Install]
           WantedBy=timers.target
+
+    - path: /etc/systemd/system/clone-matchbox.service
+      contents:
+        inline: |
+          [Unit]
+          Description=Clone matchbox repository if it does not exist
+          Documentation=https://github.com/hnatekmarorg/matchbox
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/local/bin/clone-matchbox.sh
+          RemainAfterExit=true
+
 systemd:
   units:
     - name: matchbox.service
