@@ -16,8 +16,7 @@ jobs:
         name: Download coreos ISO
       - run: mkdir -p outputs && mkdir -p package
       - run: |
-          docker run -i --rm --pull=always -u $(id -u):$(id -g) -w $(pwd) -v .:$(pwd) quay.io/coreos/coreos-installer:release iso customize -o $(pwd)/package/matchbox-${{github.ref_name}}.iso --dest-ignition $(pwd)/matchbox.ign $(pwd)/outputs/*.iso \
-            --dest-device /dev/sda
+          docker run -i --rm --pull=always -u $(id -u):$(id -g) -w $(pwd) -v .:$(pwd) quay.io/coreos/coreos-installer:release iso customize -o $(pwd)/package/matchbox-${{github.ref_name}}.iso --dest-ignition $(pwd)/matchbox.ign $(pwd)/outputs/*.iso --dest-device /dev/sda
         name: Customize ISO
       - name: Upload ISO to s3
         uses: lovellfelix/minio-deploy-action@v1

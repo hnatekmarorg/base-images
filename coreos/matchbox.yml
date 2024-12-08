@@ -61,7 +61,7 @@ storage:
           [Service]
           Restart=always
           ExecStartPre=/usr/local/bin/clone-matchbox.sh
-          ExecStart=/usr/bin/podman run --net=host --rm -v /var/lib/matchbox:/var/lib/matchbox -v /etc/matchbox:/etc/matchbox:Z,ro quay.io/poseidon/matchbox:v0.10.0 -address=0.0.0.0:8080 -log-level=debug
+          ExecStart=/usr/bin/podman run --net=host --rm -v /var/lib/matchbox:/var/lib/matchbox:Z -v /etc/matchbox:/etc/matchbox:Z,ro quay.io/poseidon/matchbox:v0.10.0 -address=0.0.0.0:8080 -log-level=debug
 
           [Install]
           WantedBy=multi-user.target
@@ -98,7 +98,7 @@ storage:
 
           [Service]
           Restart=on-failure
-          ExecStart=/usr/bin/podman run \
+          ExecStart=/usr/bin/docker run \
             --name=netbootxyz \
             -e MENU_VERSION=2.0.76 \
             -e NGINX_PORT=9000 \
@@ -106,8 +106,9 @@ storage:
             -p 3000:3000 \
             -p 69:69/udp \
             -p 9000:9000 \
-            -v /var/netbootxyz/config:/config \
-            -v /var/netbootxyz/assets:/assets \
+            -v config:/config \
+            -v assets:/assets \
+            --rm \
             --restart unless-stopped \
             ghcr.io/netbootxyz/netbootxyz
 
