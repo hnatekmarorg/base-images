@@ -108,7 +108,6 @@ storage:
             -p 9000:9000 \
             -v config:/config \
             -v assets:/assets \
-            --rm \
             --restart unless-stopped \
             ghcr.io/netbootxyz/netbootxyz
 
