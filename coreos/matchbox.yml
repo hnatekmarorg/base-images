@@ -93,23 +93,18 @@ storage:
         inline: |
           [Unit]
           Description=NetBootXYZ Container
-          After=docker.service
-          Requires=docker.service
+
+          [Container]
+          Image=ghcr.io/netbootxyz/netbootxyz
+          PublishPort=3000:3000
+          PublishPort=69:69/udp
+          PublishPort=9000:9000
+          Environment=MENU_VERSION=2.0.76 NGINX_PORT=9000 WEB_APP_PORT=3000
+          Volume=config:/config
+          Volume=assets:/assets
 
           [Service]
-          Restart=on-failure
-          ExecStart=/usr/bin/docker run \
-            --name=netbootxyz \
-            -e MENU_VERSION=2.0.76 \
-            -e NGINX_PORT=9000 \
-            -e WEB_APP_PORT=3000 \
-            -p 3000:3000 \
-            -p 69:69/udp \
-            -p 9000:9000 \
-            -v config:/config \
-            -v assets:/assets \
-            --restart unless-stopped \
-            ghcr.io/netbootxyz/netbootxyz
+          Restart=always
 
           [Install]
           WantedBy=multi-user.target
