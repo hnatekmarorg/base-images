@@ -55,14 +55,12 @@ storage:
         inline: |
           [Unit]
           Description=Matchbox Service
-          After=docker.service
-          Requires=docker.service
-
+          
           [Service]
           Restart=always
           ExecStartPre=/usr/local/bin/clone-matchbox.sh
-          ExecStart=/usr/bin/podman run --net=host --rm -v /var/lib/matchbox:/var/lib/matchbox:Z -v /etc/matchbox:/etc/matchbox:Z,ro quay.io/poseidon/matchbox:v0.10.0 -address=0.0.0.0:8080 -log-level=debug
-
+          ExecStart=/usr/bin/podman run --net=host --rm -v /etc/matchbox:/var/lib/matchbox:Z,ro quay.io/poseidon/matchbox:v0.10.0 -address=0.0.0.0:8080 -log-level=debug -assets-path=''
+          
           [Install]
           WantedBy=multi-user.target
     - path: /etc/systemd/system/matchbox-update.service
@@ -93,7 +91,7 @@ storage:
         inline: |
           [Unit]
           Description=NetBootXYZ Container
-
+          
           [Container]
           Image=ghcr.io/netbootxyz/netbootxyz
           PublishPort=3000:3000
@@ -102,10 +100,10 @@ storage:
           Environment=MENU_VERSION=2.0.76 NGINX_PORT=9000 WEB_APP_PORT=3000
           Volume=config:/config
           Volume=assets:/assets
-
+          
           [Service]
           Restart=always
-
+          
           [Install]
           WantedBy=multi-user.target
 systemd:
