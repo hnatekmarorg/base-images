@@ -9,6 +9,8 @@ passwd:
         - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDFPly2MYEeh4FtFtftOa0qasGW4VNIzYv/ZzheQ/dFs martin@fedora
 systemd:
   units:
+    - name: docker.service
+      mask: true
     - name: serial-getty@ttyS0.service
       dropins:
         - name: autologin-core.conf
