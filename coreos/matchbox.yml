@@ -59,7 +59,7 @@ storage:
           [Service]
           Restart=always
           ExecStartPre=/usr/local/bin/clone-matchbox.sh
-          ExecStart=/usr/bin/podman run --net=host --rm -v /etc/matchbox:/var/lib/matchbox:Z,ro quay.io/poseidon/matchbox:v0.10.0 -address=0.0.0.0:8080 -log-level=debug -assets-path=''
+          ExecStart=/usr/bin/podman run --net=host --rm -v /etc/matchbox:/var/lib/matchbox:Z,ro quay.io/poseidon/matchbox:v0.11.0 -address=0.0.0.0:8080 -log-level=debug -assets-path=''
           
           [Install]
           WantedBy=multi-user.target
@@ -85,7 +85,7 @@ storage:
 
           [Install]
           WantedBy=timers.target
-    - path: /etc/systemd/system/netbootxyz.service
+    - path: /etc/containers/systemd/netbootxyz.container
       mode: 0644
       contents:
         inline: |
