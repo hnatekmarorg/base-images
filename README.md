@@ -13,3 +13,6 @@ goto ${selected}
 :matchbox
 chain http://matchbox.hnatekmar.xyz:8080/boot.ipxe || goto start
 ```
+
+# Download
+Download newest release from [minio](https://minio.hnatekmar.xyz/browser/actions)
