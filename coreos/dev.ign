@@ -1,0 +1,59 @@
+{
+  "ignition": {
+    "version": "3.3.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "root",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDFPly2MYEeh4FtFtftOa0qasGW4VNIzYv/ZzheQ/dFs martin@fedora"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "directories": [
+      {
+        "path": "/etc/ucore-autorebase",
+        "mode": 492
+      },
+      {
+        "path": "/mnt/k8s",
+        "mode": 502
+      }
+    ],
+    "files": [
+      {
+        "path": "/etc/exports.d/00-truenas.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:;base64,MTcyLjE2LjEwMC4xNDg6L21udC9kYXRhL2s4cyAvbW50L2s4cyBhdXRvLHJ3LG5vZGV2LHN5bmMsX25ldGRldixwcm90bz10Y3AscmV0cnk9MTAscnNpemU9MzI3Njgsd3NpemU9MzI3NjgsaGFyZCxpbnRyIDAgMAo="
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/containers/registries.conf.d/mirrors.conf",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/4zMMQ7CMAxG4T3H8N7coCepOljGJFZpDT9Bajg9AnYr83v6lgVa7NnQ1zXdXLiZHzPtBjimi8ummMxzPbjptjPy2d+U7tCrnTP9h2xOKcVUkcgpMobUWKljzOPFPWC++cd8AgAA//9TBVH8HQEAAA=="
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=uCore autorebase to unsigned OCI and reboot\nConditionPathExists=!/etc/ucore-autorebase/unverified\nConditionPathExists=!/etc/ucore-autorebase/signed\nAfter=network-online.target\nWants=network-online.target\n[Service]\nType=oneshot\nStandardOutput=journal+console\nExecStart=/usr/bin/rpm-ostree rebase --bypass-driver ostree-unverified-registry:ghcr.io/ublue-os/ucore:stable-nvidia\nExecStart=/usr/bin/touch /etc/ucore-autorebase/unverified\nExecStart=/usr/bin/systemctl disable ucore-unsigned-autorebase.service\nExecStart=/usr/bin/systemctl reboot\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "ucore-unsigned-autorebase.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=uCore autorebase to signed OCI and reboot\nConditionPathExists=/etc/ucore-autorebase/unverified\nConditionPathExists=!/etc/ucore-autorebase/verified\nAfter=network-online.target\nWants=network-online.target\n[Service]\nType=oneshot\nStandardOutput=journal+console\nExecStart=/usr/bin/rpm-ostree rebase --bypass-driver ostree-image-signed:docker://ghcr.io/ublue-os/ucore:stable-nvidia\nExecStart=/usr/bin/touch /etc/ucore-autorebase/signed\nExecStart=/usr/bin/systemctl disable ucore-signed-autorebase.service\nExecStart=/usr/bin/systemctl reboot\n[Install]\nWantedBy=multi-user.target",
+        "enabled": true,
+        "name": "ucore-signed-autorebase.service"
+      }
+    ]
+  }
+}
